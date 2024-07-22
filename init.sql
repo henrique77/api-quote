@@ -1,0 +1,11 @@
+CREATE DATABASE IF NOT EXISTS quote_db;
+
+USE quote_db;
+
+CREATE TABLE IF NOT EXISTS quotes (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    service VARCHAR(255) NOT NULL,
+    deadline INT NOT NULL,
+    price DECIMAL(10,2) NOT NULL
+);
