@@ -10,6 +10,7 @@ import (
 
 type QuoteService interface {
 	Save(request *controllerModel.QuoteRequest) ([]*model.Quote, error)
+	GetMetrics(lastQuotes int) (*model.Metrics, error)
 }
 
 type quoteService struct {
@@ -41,6 +42,10 @@ func (s *quoteService) Save(request *controllerModel.QuoteRequest) ([]*model.Quo
 	}
 
 	return quotes, nil
+}
+
+func (s *quoteService) GetMetrics(lastQuotes int) (*model.Metrics, error) {
+	return s.repository.GetMetrics(lastQuotes)
 }
 
 func (s *quoteService) readQuoteInfoFromClient(response *clientModel.ClientQuoteResponse) []*model.Quote {

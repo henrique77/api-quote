@@ -11,6 +11,7 @@ import (
 
 type QuoteController interface {
 	SaveQuotes(app *fiber.Ctx) error
+	GetMetrics(app *fiber.Ctx) error
 }
 
 type quoteController struct {
@@ -31,6 +32,21 @@ func (q *quoteController) SaveQuotes(c *fiber.Ctx) error {
 	}
 
 	response, err := q.service.Save(request)
+	if err != nil {
+		c.Status(http.StatusBadRequest).JSON(model.NewError().InternalServer(err))
+	}
+
+	return c.Status(http.StatusOK).JSON(response)
+}
+
+func (q *quoteController) GetMetrics(c *fiber.Ctx) error {
+	params := new(controllerModel.MetricsRequest)
+
+	if err := c.QueryParser(params); err != nil {
+		c.Status(http.StatusBadRequest).JSON(model.NewError().BadRequest(err))
+	}
+
+	response, err := q.service.GetMetrics(params.LastQuotes)
 	if err != nil {
 		c.Status(http.StatusBadRequest).JSON(model.NewError().InternalServer(err))
 	}

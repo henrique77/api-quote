@@ -42,4 +42,5 @@ func (s *server) Start() {
 func (s *server) configRouts() {
 	quoteV1 := s.router.Group("/v1")
 	quoteV1.Post("/quote", s.controller.SaveQuotes)
+	quoteV1.Get("/quote", s.controller.GetMetrics)
 }
