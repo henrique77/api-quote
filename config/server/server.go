@@ -2,6 +2,7 @@ package server
 
 import (
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/swagger"
 	"github.com/henrique77/api-quote/client"
 	"github.com/henrique77/api-quote/config"
 	"github.com/henrique77/api-quote/config/database"
@@ -40,7 +41,9 @@ func (s *server) Start() {
 }
 
 func (s *server) configRouts() {
+
 	quoteV1 := s.router.Group("/v1")
+	quoteV1.Get("/swagger/*", swagger.HandlerDefault)
 	quoteV1.Post("/quote", s.controller.SaveQuotes)
-	quoteV1.Get("/quote", s.controller.GetMetrics)
+	quoteV1.Get("/metrics", s.controller.GetMetrics)
 }

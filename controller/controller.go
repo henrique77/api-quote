@@ -24,6 +24,16 @@ func NewQuoteController(service service.QuoteService) QuoteController {
 	}
 }
 
+// @Summary		Quote
+// @Description	Route for receiving input data and generating a freight quote
+// @Tags			quote
+// @Accept			json
+// @Produce		json
+// @Param			request	body		model.QuoteRequest	true	"quote request"
+// @Success		200		{array}		model.Quote
+// @Failure		400		{object}	model.ControllerError
+// @Failure		500		{object}	model.ControllerError
+// @Router			/v1/quote [post]
 func (q *quoteController) SaveQuotes(c *fiber.Ctx) error {
 	request := new(controllerModel.QuoteRequest)
 
@@ -39,6 +49,16 @@ func (q *quoteController) SaveQuotes(c *fiber.Ctx) error {
 	return c.Status(http.StatusOK).JSON(response)
 }
 
+// @Summary		Metrics
+// @Description	Consult quote metrics
+// @Tags			metrics
+// @Accept			json
+// @Produce		json
+// @Param			last_quotes	query		int	false	"Number of quotes (descending order)"
+// @Success		200			{array}		model.Metrics
+// @Failure		400			{object}	model.ControllerError
+// @Failure		500			{object}	model.ControllerError
+// @Router			/v1/metrics [get]
 func (q *quoteController) GetMetrics(c *fiber.Ctx) error {
 	params := new(controllerModel.MetricsRequest)
 

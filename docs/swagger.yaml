@@ -1,0 +1,150 @@
+definitions:
+  github_com_henrique77_api-quote_model_controller.Recipient:
+    properties:
+      address:
+        $ref: '#/definitions/model.Address'
+    type: object
+  github_com_henrique77_api-quote_model_controller.Volume:
+    properties:
+      amount:
+        type: integer
+      category:
+        type: integer
+      height:
+        type: number
+      length:
+        type: number
+      price:
+        type: number
+      sku:
+        type: string
+      unitary_weight:
+        type: number
+      width:
+        type: number
+    type: object
+  model.Address:
+    properties:
+      zipcode:
+        type: string
+    required:
+    - zipcode
+    type: object
+  model.ControllerError:
+    properties:
+      error:
+        type: string
+      status:
+        type: string
+      statusCode:
+        type: integer
+    type: object
+  model.Metrics:
+    properties:
+      average_final_price:
+        additionalProperties:
+          type: number
+        type: object
+      least_expensive_shipping:
+        type: number
+      most_expensive_shipping:
+        type: number
+      results_per_carrier:
+        additionalProperties:
+          type: integer
+        type: object
+      total_final_price:
+        additionalProperties:
+          type: number
+        type: object
+    type: object
+  model.Quote:
+    properties:
+      deadline:
+        type: integer
+      name:
+        type: string
+      price:
+        type: number
+      service:
+        type: string
+    type: object
+  model.QuoteRequest:
+    properties:
+      recipient:
+        $ref: '#/definitions/github_com_henrique77_api-quote_model_controller.Recipient'
+      volumes:
+        items:
+          $ref: '#/definitions/github_com_henrique77_api-quote_model_controller.Volume'
+        type: array
+    type: object
+info:
+  contact: {}
+  description: API responsible for managing freight quotes
+  termsOfService: http://swagger.io/terms/
+  title: API Quote
+  version: "1.0"
+paths:
+  /v1/metrics:
+    get:
+      consumes:
+      - application/json
+      description: Consult quote metrics
+      parameters:
+      - description: Number of quotes (descending order)
+        in: query
+        name: last_quotes
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/model.Metrics'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ControllerError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ControllerError'
+      summary: Metrics
+      tags:
+      - metrics
+  /v1/quote:
+    post:
+      consumes:
+      - application/json
+      description: Route for receiving input data and generating a freight quote
+      parameters:
+      - description: quote request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/model.QuoteRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/model.Quote'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.ControllerError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.ControllerError'
+      summary: Quote
+      tags:
+      - quote
+swagger: "2.0"
