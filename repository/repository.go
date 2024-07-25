@@ -33,6 +33,10 @@ func (r *quoteRepository) GetMetrics(lastQuotes int) (*model.Metrics, error) {
 		return nil, err
 	}
 
+	if len(metrics.ResultsPerCarrier) == 0 {
+		return metrics, nil
+	}
+
 	if err := r.getTotalFinalPricePerCarrier(lastQuotes, metrics); err != nil {
 		return nil, err
 	}
@@ -41,7 +45,7 @@ func (r *quoteRepository) GetMetrics(lastQuotes int) (*model.Metrics, error) {
 		return nil, err
 	}
 
-	if err := r.getLeastExpensiveShippinh(lastQuotes, metrics); err != nil {
+	if err := r.getLeastExpensiveShipping(lastQuotes, metrics); err != nil {
 		return nil, err
 	}
 
@@ -74,9 +78,9 @@ func (r *quoteRepository) getResultsPerCarrier(lastQuotes int, metrics *model.Me
 func (r *quoteRepository) getTotalFinalPricePerCarrier(lastQuotes int, metrics *model.Metrics) error {
 	find := []*model.TotalFinalPrice{}
 
-	querry := fmt.Sprintf("SELECT name, ROUND(SUM(price), 2) AS total FROM %s GROUP BY name;", r.validateSubqueryLastQuotes(lastQuotes))
+	query := fmt.Sprintf("SELECT name, ROUND(SUM(price), 2) AS total FROM %s GROUP BY name;", r.validateSubqueryLastQuotes(lastQuotes))
 
-	if err := r.db.Raw(querry).Scan(&find).Error; err != nil {
+	if err := r.db.Raw(query).Scan(&find).Error; err != nil {
 		return err
 	}
 
@@ -92,7 +96,7 @@ func (r *quoteRepository) getTotalFinalPricePerCarrier(lastQuotes int, metrics *
 func (r *quoteRepository) getAverageFinalPricePerCarrier(lastQuotes int, metrics *model.Metrics) error {
 	find := []*model.AverageFinalPrice{}
 
-	query := fmt.Sprintf("SELECT name, ROUND(AVG(price), 2) AS average FROM %s GROUP BY name", r.validateSubqueryLastQuotes(lastQuotes))
+	query := fmt.Sprintf("SELECT name, ROUND(AVG(price), 2) AS average FROM %s GROUP BY name;", r.validateSubqueryLastQuotes(lastQuotes))
 
 	if err := r.db.Raw(query).Scan(&find).Error; err != nil {
 		return err
@@ -107,7 +111,7 @@ func (r *quoteRepository) getAverageFinalPricePerCarrier(lastQuotes int, metrics
 	return nil
 }
 
-func (r *quoteRepository) getLeastExpensiveShippinh(lastQuotes int, metrics *model.Metrics) error {
+func (r *quoteRepository) getLeastExpensiveShipping(lastQuotes int, metrics *model.Metrics) error {
 	query := fmt.Sprintf("SELECT MIN(price) FROM %s;", r.validateSubqueryLastQuotes(lastQuotes))
 
 	return r.db.Raw(query).Scan(&metrics.LeastExpensiveShipping).Error
@@ -121,7 +125,7 @@ func (r *quoteRepository) getMostExpensiveShipping(lastQuotes int, metrics *mode
 
 func (r *quoteRepository) validateSubqueryLastQuotes(lastQuotes int) string {
 	if lastQuotes > 0 {
-		return fmt.Sprintf(`(SELECT * FROM quotes ORDER BY id DESC LIMIT %d) AS subquery`, lastQuotes)
+		return fmt.Sprintf(`(SELECT * FROM quotes ORDER BY id DESC LIMIT %d) AS subquery `, lastQuotes)
 	}
 
 	return "quotes"

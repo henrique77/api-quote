@@ -1,6 +1,8 @@
 package service
 
 import (
+	"errors"
+
 	"github.com/henrique77/api-quote/client"
 	"github.com/henrique77/api-quote/model"
 	clientModel "github.com/henrique77/api-quote/model/client"
@@ -28,6 +30,10 @@ func NewQuoteService(quoteClient client.QuoteClient, repository repository.Quote
 func (s *quoteService) Save(request *controllerModel.QuoteRequest) ([]*model.Quote, error) {
 	clientRequest := new(clientModel.ClientQuoteRequest)
 
+	err := s.validateRequestInfo(request)
+	if err != nil {
+		return nil, err
+	}
 	clientRequest.New(request)
 
 	cleintResponse, err := s.quoteClient.GetQuotes(clientRequest)
@@ -68,4 +74,45 @@ func (s *quoteService) readQuoteInfoFromClient(response *clientModel.ClientQuote
 func (s *quoteService) extractDeadLine(deliveryTime *clientModel.DeliveryTime) int {
 
 	return deliveryTime.Days
+}
+
+func (s *quoteService) validateRequestInfo(request *controllerModel.QuoteRequest) error {
+	if request.Recipient == nil {
+		return errors.New("request is nil")
+	}
+
+	if request.Recipient.Address.Zipcode == "" {
+		return errors.New("zipcode is empty")
+	}
+
+	if request.Volumes == nil {
+		return errors.New("values is nil")
+	}
+
+	for _, v := range request.Volumes {
+		if v.Category == 0 {
+			return errors.New("category is empty")
+		}
+		if v.Amount == 0 {
+			return errors.New("amunt is empty")
+		}
+		if v.UnitaryWeight == 0 {
+			return errors.New("unitary wight is empty")
+		}
+		if v.Price == 0 {
+			return errors.New("price is empty")
+		}
+		if v.Height == 0.0 {
+			return errors.New("height is empty")
+		}
+		if v.Width == 0.0 {
+			return errors.New("width is empty")
+		}
+		if v.Length == 0.0 {
+			return errors.New("length is empty")
+		}
+
+	}
+
+	return nil
 }
