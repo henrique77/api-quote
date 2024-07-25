@@ -18,6 +18,7 @@ Agora a API pode ser testada usando o [Postman](https://www.postman.com/) ou out
 - POST   /v1/quote
 - GET    /v1/metrics?last_quotes={?}
 ```
+#### POST
 A rota __POST__ recebe os dados de entrada e realiza cotação com a [API da Frete Rápido](https://dev.freterapido.com/ecommerce/cotacao_v3/#).
 Para essa rota é esperado um JSON de entrada como do exemplo:
  ```json
@@ -51,10 +52,12 @@ Para essa rota é esperado um JSON de entrada como do exemplo:
 	]
 }
  ```
+#### GET
  A rota __GET__ consulta as metricas das cotações armazenadas no banco de dados. Opcionalmente nessa rota pode ser passado o parametro __last_quotes__ que seleciona a quantidade de cotações retornadas (ordem decrescente).
 
 Para mais detalhes e informações de uso, acesse a documentação da API no link:
 Obs.: O link considera que a porta da aplicação seja a 3000
+
 <http://localhost:3000/v1/swagger/index.html>
 
 ## Sobre mim
